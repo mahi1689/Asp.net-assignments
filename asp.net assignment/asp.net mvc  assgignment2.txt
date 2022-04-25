@@ -1,0 +1,20 @@
+create table businfo(
+busid int primary key,
+boardingpoint varchar(50),
+traveldate datetime,
+amount decimal,
+rating int
+);
+
+
+
+create procedure busbook
+@busid int,
+@boardingpoint varchar(15),
+@traveldate datetime,
+@amount decimal,
+@rating int
+as
+begin
+insert into dbo.businfo(busid,boardingpoint,traveldate,amount,rating) values(@busid,@boardingpoint,@traveldate,@amount,@rating); 
+end
