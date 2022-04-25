@@ -1,0 +1,182 @@
+create table footballleague(
+matchid int unique not null,
+teamname1 varchar(50),
+teamname2 varchar(50),
+status varchar(5),
+winningteam varchar(15) default 'null',
+points int
+);
+
+
+
+create procedure football
+@matchid int,
+@teamname1 varchar(15),
+@teamname2 varchar(15),
+@status varchar(5),
+@winningteam varchar(15),
+@points int
+as
+begin
+insert into dbo.footballleague(matchid,teamname1,teamname2,status,winningteam,points) values(@matchid,@teamname1,@teamname2,@status,@winningteam,@points); 
+end
+
+
+//insert data
+exec football 1001,'italy','france','win','france',4;
+exec football 1002,'','france','win','france',4;
+exec football 1005,'portugal','italy','draw','null',2;
+exec football 1008,'japan','usa','draw','null',2;
+
+output:
+
+matchid	teamname1	teamname2	status	winningteam	points
+1001	italy		france	         win	france	         4
+1002	brazil		portugal	draw	null		 2
+1003	england		japan		win	england		 4
+1004	usa		russia		win	usa		 4
+1005	portugal	italy		draw	null		 2
+1006	brazil		france		win	brazil		 4
+1007	england		russai		win	russia		 4
+1008	japan		usa		draw	null		 2
+
+
+
+a.Retrieve all the winning TeamNames.
+
+select * from dbo.footballleague where status='win';
+
+
+
+b.Create View Match_View to display the teams whose status is Draw
+
+create view viewstatus
+as
+select teamname1,teamname2
+from dbo.footballleague
+where status = 'draw';
+
+select * from viewstatus;
+
+output:
+
+teamname1	teamname2
+brazil	        portugal
+
+
+c.Retrieve the details of all matches in which Japan played
+
+
+select * from dbo.footballleague where teamname1='japan' or teamname2='japan';
+
+output:
+matchid	teamname1	teamname2	status	winningteam	points
+1003	england		japan		win	england		4
+1008	japan		usa		draw	null		2
+
+portugal	italy
+japan	        usa
+
+
+
+-----------------------------------------------------------------------------------------------------
+
+
+
+2.
+
+Register.cs
+
+using System.Web;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace MvcApplication1.Models
+{
+    [Table("dbo.footballleague")]
+    public class Register
+    {
+        [Key]
+        [Required]
+        [RegularExpression("([1-9][0-9]*)", ErrorMessage="Enter Only Numbers")]
+        
+        public int matchid;
+
+        [Required]
+        public string teamname1 { get; set; }
+
+        [Required]
+        public string teamname2 { get; set; }
+
+        [Required]
+        public string status { get; set; }
+
+
+        public string winningteam { get; set; }
+
+        [Required]
+        public int points { get; set; }
+
+    }
+}
+
+
+
+
+
+//homecontroller.cs
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using MvcApplication1.Models;
+
+namespace MvcApplication1.Controllers
+{
+    public class HomeController : Controller
+    {
+        //
+        // GET: /Home/
+
+        public ActionResult Register()
+        {
+            return View();
+        }
+
+        
+       // [HttpPost]
+       // public ActionResult SubmitData(Register r)
+       // {
+
+         //   if(ModelState.IsValid)
+         //   {
+         //       return View();
+         //   }
+
+         //   return View("Index");
+        //}
+    }
+}
+
+
+
+//using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data.Entity;
+
+namespace MvcApplication1.Models
+{
+    public class usercontext : DbContext
+    {
+        public usercontext()
+            : base("dbconnectionmahi")
+        {
+        }
+
+        public DbSet<Register> RegisterTable { get; set; }
+    }
+}
